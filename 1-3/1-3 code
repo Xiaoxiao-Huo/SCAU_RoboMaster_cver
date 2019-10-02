@@ -1,0 +1,56 @@
+
+
+/*
+******************************************************************************
+pro文件
+
+TEMPLATE = app
+CONFIG += console c++11
+CONFIG -= app_bundle
+CONFIG -= qt
+
+SOURCES += \
+        main.cpp
+
+INCLUDEPATH += /usr/local/include \
+               /usr/local/include/opencv \
+               /usr/local/include/opencv2
+
+LIBS += /usr/local/lib/libopencv_highgui.so \
+        /usr/local/lib/libopencv_core.so    \
+        /usr/local/lib/libopencv_imgproc.so \
+        /usr/local/lib/libopencv_imgcodecs.so
+******************************************************************************
+*/
+
+
+
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-1
+* @version    3.4.3
+* @brief      图片读写与显示，调节图像大小
+******************************************************************************
+*/
+
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+
+
+int main()
+{
+    cv::Mat img = cv::imread("/media/lbb/数据 M/工程猫/猫1.jpg");
+    cv::resize(img,img,cv::Size(1280,720));
+	// 调整大小
+    cv::imshow("可爱的小猫咪", img);
+    cv::imwrite("可爱的小猫咪.jpg",img);
+    cv::waitKey(0);
+    return 0;
+}
+
+
+
