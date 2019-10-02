@@ -1,0 +1,73 @@
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-2
+* @version    3.4.3
+* @brief      用canny算子对色彩分割后的图进行边缘提取，并画出边缘（绿色），背景为黑色
+******************************************************************************
+*/
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+int main()
+{
+    cv::Mat src = cv::imread("/media/lbb/数据 M/工程猫/荔枝.png");
+    cv::imshow("src", src);
+    cv::namedWindow("src",0);
+
+    // [1]色彩分割
+    std::vector<cv::Mat> Channels;
+    cv::split(src,Channels);
+    cv::Mat red = Channels[2];
+    cv::Mat green = Channels[1];
+    cv::Mat red1 = Channels[2] - Channels[1];
+    cv::threshold(red1,red1,50,255,cv::THRESH_BINARY);
+    cv::imshow("red1",red1);
+    cv::namedWindow("red1",0);
+
+    // [2]canny算法提取边缘
+    cv::Mat gray,edge;
+    gray.create(src.size(),src.type());
+    // 或：src.create(src.rows,src.cols,src.type());
+    // 创建和src同大小同类型的矩阵gray
+    cv::cvtColor(src,gray,cv::COLOR_BGR2GRAY);
+    cv::blur(gray,edge,cv::Size(9,9));
+    // 用3*3内核降噪
+    cv::Canny(edge,edge,3,9,3);
+    // Canny算子检测边缘
+    // 3-下阈值 4-上阈值 一般上阈值/下阈值=2~3 5-算子大小，默认为3，表示3*3的矩阵
+    cv::imshow("edge",edge);
+    cv::namedWindow("edge",0);
+
+
+    // [3]获取边缘并画出轮廓
+    std::vector<std::vector<cv::Point>> Counters;
+    // 检测到的轮廓，每个轮廓被表示成一个point向量
+    std::vector<cv::Vec4i> Hierarchy;
+    // 图像的拓扑信息
+    cv::Mat Drawing = cv::Mat::zeros(edge.size(), CV_8UC3);
+    // 创建黑色矩阵
+    cv::findContours(edge,Counters,Hierarchy,cv::RETR_TREE,\
+                     cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+	// 寻找轮廓
+    // 4 RETR_TREE 检测出所有轮廓并且重新建立网状的轮廓结构。
+    // 5 CV_CHAIN_APPROX_SIMPLE压缩水平，垂直或斜的部分，只保存最后一个点。
+
+    for(int i=0;i<int(Hierarchy.size());i++)
+    {
+        cv::drawContours(Drawing,Counters,i,cv::Scalar(0,255,0),\
+                         1,8,Hierarchy,0,cv::Point());
+		// 绘制轮廓
+        // 3-指定要绘制轮廓的编号
+    }
+    cv::imshow("Drawing",Drawing);
+    cv::namedWindow("Drawing",0);
+
+    cv::waitKey(0);
+    return 0;
+}
+
