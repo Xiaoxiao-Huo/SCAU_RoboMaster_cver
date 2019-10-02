@@ -1,0 +1,109 @@
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-1
+* @version    3.4.3
+* @brief      将图片中红色通过色彩分割的方法二值化成黑白图像
+			（目标颜色为白，其余背景为黑）
+******************************************************************************
+*/
+
+// version 1
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+int main()
+{
+    cv::Mat img = cv::imread("/media/lbb/数据 M/工程猫/荔枝.png");
+    cv::imshow("src", img);
+    cv::namedWindow("src",0);
+    // RGB 分割
+    std::vector<cv::Mat> Channels;
+    cv::split(img,Channels);
+	// split 分割通道
+    cv::Mat red = Channels[2];
+
+    cv::threshold(red,red,200,255,cv::THRESH_BINARY);
+    cv::imshow("dst",red);
+    cv::namedWindow("dst",0);
+    cv::waitKey(0);
+    return 0;
+}
+
+// version 2
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+int main()
+{
+    cv::Mat img = cv::imread("/media/lbb/数据 M/工程猫/荔枝.png");
+    cv::imshow("src", img);
+    cv::namedWindow("src",0);
+    // RGB 分割
+    std::vector<cv::Mat> Channels;
+    cv::split(img,Channels);
+    cv::Mat red = Channels[2];
+    cv::Mat green = Channels[1];
+    cv::Mat red1 = Channels[2] - Channels[1];
+    cv::threshold(red1,red1,50,255,cv::THRESH_BINARY);
+    cv::imshow("dst",red1);
+    cv::namedWindow("dst",0);
+    cv::waitKey(0);
+    return 0;
+}
+
+// version 3
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+int main()
+{
+    cv::Mat img = cv::imread("/media/lbb/数据 M/工程猫/荔枝.png");
+    cv::imshow("src", img);
+    cv::namedWindow("src",0);
+
+    cv::Mat HSV;
+    cv::cvtColor(img,HSV,cv::COLOR_BGR2HSV);
+    // 将RGB转为HSV颜色空间
+
+    for(int i=0;i<HSV.rows;i++)
+    {
+        for(int j=0;j<HSV.cols;j++)
+        {
+            int p0 = HSV.at<cv::Vec3b>(i,j)[0];
+            // Vec3b : C3, uchar8U
+            int p1 = HSV.at<cv::Vec3b>(i,j)[1];
+            int p2 = HSV.at<cv::Vec3b>(i,j)[2];
+            // 遍历像素，查表得红色的HSV值范围
+            if((p0 >156 && p0< 180)&& \
+                    (p1>43 && p1<255) && (p2>46 && p2<255))
+            {
+                HSV.at<cv::Vec3b>(i,j)[1] = 0;
+                HSV.at<cv::Vec3b>(i,j)[2] = 255;
+            }
+            else
+            {
+                HSV.at<cv::Vec3b>(i,j)[1] = 0;
+                HSV.at<cv::Vec3b>(i,j)[2] = 0;
+            }
+        }
+    }
+    cv::cvtColor(HSV,HSV,cv::COLOR_HSV2BGR);
+    cv::imshow("dst",HSV);
+    cv::namedWindow("dst",0);
+    cv::waitKey(0);
+    return 0;
+}
+
+
+
