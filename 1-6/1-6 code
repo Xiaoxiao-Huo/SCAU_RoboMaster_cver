@@ -1,0 +1,160 @@
+
+/*
+******************************************************************************
+pro文件
+
+TEMPLATE = app
+CONFIG += console c++11
+CONFIG -= app_bundle
+CONFIG -= qt
+
+SOURCES += \
+    main.cpp
+
+INCLUDEPATH += /usr/local/include \
+               /usr/local/include/opencv \
+               /usr/local/include/opencv2
+
+LIBS += /usr/local/lib/libopencv_highgui.so \
+        /usr/local/lib/libopencv_core.so    \
+        /usr/local/lib/libopencv_imgproc.so \
+        /usr/local/lib/libopencv_imgcodecs.so\
+        /usr/local/lib/libopencv_objdetect.so\
+        /usr/local/lib/libopencv_shape.so \
+        /usr/local/lib/libopencv_videoio.so
+
+HEADERS +=
+******************************************************************************
+*/
+
+
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-3
+* @version    3.4.3
+* @brief      读取本地视频并用窗口播放
+******************************************************************************
+*/
+
+
+#include <opencv2/opencv.hpp>
+
+int main()
+{
+    // 读取视频
+    // cv::VideoCapture cap;
+    // cap.open("1.avi");
+    cv::VideoCapture cap("1.avi");
+
+    // 用窗口播放视频
+    cv::Mat frame;    
+    while(1)
+    {
+        cap>>frame;
+        // cap.read(frame);
+        if(frame.empty())
+            break;
+        cv::imshow("video",frame);
+        cv::waitKey(10);
+    }
+	cap.release();
+    return 0;
+}
+
+
+
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-3
+* @version    3.4.3
+* @brief      开启摄像头并用窗口显示
+******************************************************************************
+*/
+
+
+#include <opencv2/opencv.hpp>
+
+int main()
+{
+    // 开启摄像头
+    // cv::VideoCapture cap;
+    // cap.open(0);
+    cv::VideoCapture cap(0);
+
+    // 用窗口显示
+    cv::Mat frame;    
+    while(1)
+    {
+        cap>>frame;
+        // cap.read(frame);
+        if(frame.empty())        
+            break;
+        cv::imshow("cap",frame);
+        cv::waitKey(10);
+    }
+	cap.release();
+    return 0;
+}
+
+
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-4
+* @version    3.4.3
+* @brief      录制摄像头视频30s并保存
+******************************************************************************
+*/
+
+#include <opencv2/opencv.hpp>
+
+int main()
+{
+    cv::VideoCapture cap(0);
+    if(!cap.isOpened())
+        return -1;
+    int frame_width = int(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    int frame_height = int(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    // 用cv::VideoCapture的成员函数get()获取摄像头属性
+    cv::VideoWriter video("outcpp.avi",CV_FOURCC('M', 'J', 'P', 'G'),\
+                          25.0,cv::Size(frame_width,frame_height));
+    // 2-编码形式 CV_FOURCC('P', 'I', 'M', '1') = MPEG-1 codec
+    // 3-视频帧率 4-单帧图片大小
+    double time0 =static_cast<double>(cv::getTickCount());
+    double time1 = 0, time2 = 0;
+
+    while(1)
+    {
+        cv::Mat frame;
+        cap>>frame;
+        if(frame.empty())
+            break;
+        video<<frame;
+        // video.write(frame);
+        // 写入视频文件
+        cv::imshow("自动录制30秒，或按Esc停止录制",frame);
+        // 录制30s
+        time2 = time1;
+        time1 = static_cast<double>((cv::getTickCount()-time0)/cv::getTickFrequency());
+        // getTickcount 返回从操作系统启动到当前所经过的毫秒数
+        // getTickFrequency 返回每秒的计时周期数
+        if(time1 > time2)
+            std::cout<<"距离录制结束还有"<<30-time1<<"秒"<<std::endl;
+        if(time1 >= 30)
+            // 录制30秒后停止
+            break;
+        if(cv::waitKey(1)==27)
+            // 按Esc键停止
+            break;
+    }
+    cap.release();
+    video.release();
+    cv::destroyAllWindows();
+    return 0;
+}
+
