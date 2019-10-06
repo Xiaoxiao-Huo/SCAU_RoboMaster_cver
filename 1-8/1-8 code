@@ -1,0 +1,46 @@
+
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-6
+* @version    3.4.3
+* @brief      拖动滑动条调节摄像头曝光率
+******************************************************************************
+*/
+
+#include<opencv2/opencv.hpp>
+
+#define Window_name "调节摄像头曝光率"
+cv::VideoCapture cap;
+cv::Mat frame;
+int exposure;
+
+
+void on_Trackbar(int, void*)
+{
+    cap.set(CV_CAP_PROP_EXPOSURE,exposure);
+}
+
+int main(int argc,char** argv)
+{
+    cap.open(0);
+    if(!cap.isOpened())
+    {
+        return -1;
+    }
+    exposure = 50;
+
+    while(1)
+    {
+        cap >> frame;
+        cv::imshow(Window_name, frame);
+        cv::namedWindow(Window_name,0);
+
+        cv::createTrackbar("摄像头曝光率",Window_name,&exposure,100,on_Trackbar);
+        on_Trackbar(exposure,0);
+        cv::waitKey(30);
+    }
+    return 0;
+}
+
