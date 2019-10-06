@@ -1,0 +1,102 @@
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-5
+* @version    3.4.3
+* @brief      输出的摄像头信息，包括视频图像大小、帧率（FPS）
+******************************************************************************
+*/
+
+#include <stdlib.h>
+#include <iostream>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+int main()
+{
+    cv::VideoCapture cap(0);
+    // cv::VideoCapture cap("1.avi");
+    cv::Mat frame;
+    double fps;
+    char string[10];  // 帧率字符串
+    cv::namedWindow("Camera FPS");
+    double t = 0;
+    while (1)
+    {
+        t = static_cast<double>(cv::getTickCount());
+        if (cap.isOpened())
+        {
+            cap >> frame;
+            t = (static_cast<double>(cv::getTickCount()) - t) / cv::getTickFrequency();
+            fps = 1.0 / t;
+            // t为该处代码执行所耗的时间,单位为秒,fps为其倒数
+            sprintf(string, "%.2f", fps);
+            std::string fpsString("FPS:");
+            fpsString += string;
+            // 在"FPS:"后加入帧率数值字符串
+            printf("fps: %.2f width:%d height:%d fps:%.2f\n", \
+                   fps, frame.cols, frame.rows, cap.get(CV_CAP_PROP_FPS));
+            // capture.get(CV_CAP_PROP_FPS)只对摄像头有效
+            // 将帧率信息写在输出帧上
+            cv::putText(frame, 				// 图像矩阵
+                fpsString,                  // string型文字内容
+                cv::Point(5, 20),           // 文字坐标，以左下角为原点
+                cv::FONT_HERSHEY_SIMPLEX,   // 字体类型
+                0.5, 						// 字体大小
+                cv::Scalar(0, 0, 0));       // 字体颜色
+            cv::imshow("Camera FPS", frame);
+            char c = static_cast<char>(cv::waitKey(30)); //延时30毫秒
+            // waitKey延时越长 fps越小 出现跳帧 摄像头显示变卡
+            if (c == 27)  // 按ESC键退出
+                break;
+        }
+        else
+            break;
+    }
+}
+
+
+/*
+******************************************************************************
+* @file       main.cpp
+* @author     Xiaoxiao
+* @date       2019-10-6
+* @version    3.4.3
+* @brief      调节摄像头曝光时间（10、40、80）对比其效果
+******************************************************************************
+*/
+
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main()
+{
+    cv::VideoCapture cap(0);
+    // cv::VideoCapture cap("1.avi");
+    if(!cap.isOpened())
+    {
+        return -1;
+    }
+    cv::Mat frame;
+    double exposure = cap.get(CV_CAP_PROP_EXPOSURE);
+    std::cout<<"原来的曝光率:"<<exposure<<std::endl;
+    exposure = 80;
+    // 40,80
+    cap.set(CV_CAP_PROP_EXPOSURE, exposure);
+    std::cout << "曝光率设置为" << exposure << std::endl;
+    while(1)
+    {
+        cap>>frame;
+        if(frame.empty())
+            break;
+        cv::imshow("cap",frame);
+        cv::waitKey(30);
+    }
+    cap.release();
+    return 0;
+}
+
+
+
