@@ -1,0 +1,72 @@
+#include<opencv2/opencv.hpp>
+#include<iostream>
+#define Window_name "按键事件"
+void helptext()
+{
+    printf("\n\n\t按键数字“1”进入进程1：输出“进程1”\n");
+    printf("\t按键数字“2”进入进程2：打开摄像头\n");
+    printf("\t按键数字“3”进入进程3：imshow图片1\n");
+    printf("\t进入前三个进程其中之一后按“0”退出并且清空所有窗口\n");
+    printf("\t按0后重新按1、2或3可以重新进入进程1、2或3\n\n\n");
+
+}
+
+int main()
+{
+    helptext();
+
+    cv::VideoCapture cap;
+    cv::Mat frame;
+    cv::Mat img = cv::imread("/media/lbb/数据 M/RM二面/图片1.jpg");
+
+    cv::namedWindow(Window_name, 1);
+    while (1)
+    {
+        int c;
+        std::cin >> c;
+        switch (c)
+        {
+        case 1:
+        {
+            std::cout<<"进程1"<<std::endl;
+            break;
+        }
+        case 2:
+        {
+            cap.open(0);
+            if(!cap.isOpened())
+            {
+                return -1;
+            }
+            while (1)
+            {
+                cap >> frame;
+
+                cv::imshow(Window_name, frame);
+                cv::namedWindow(Window_name, 1);
+                int k = cv::waitKey(30);
+                if(k == 32)
+                    break;
+
+            }
+            cv::destroyAllWindows();
+            cap.release();
+            break;
+        }
+        case 3:
+        {
+            cv::namedWindow(Window_name, 1);
+            cv::imshow(Window_name, img);
+            cv::waitKey(0);
+            break;
+        }
+        case 0:
+        {
+            cv::destroyWindow(Window_name);
+            break;
+        }
+
+        }
+    }
+}
+
