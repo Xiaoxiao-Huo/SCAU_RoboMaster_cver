@@ -1,0 +1,22 @@
+
+vim
+
+1.正常模式 ESC
+
+2.插入模式 i
+
+3.强制退出 ESC :q!
+  保存退出 ESC :wq
+
+4.sudo vim 可编辑
+  vim 只读
+
+5.dd 删除整行
+
+
+qtcreator
+
+1.打开目录：/usr/lib/x86_64-linux-gnu/qt-default/qtchooser$ 
+
+2.启动方式：目录下qtcreator
+            启动器

@@ -1,0 +1,43 @@
+
+1.
+cd 切换目录
+注意前面要有/ /表示根目录
+eg.我的磁盘所在目录为/media/lbb，则 cd /media/lbb
+
+2.
+pwd 返回绝对路径
+eg.cd /media/lbb
+   pwd
+/media/lbb
+
+3.
+ls 列出当前路径下文件目录列表
+eg.cd /media/lbb
+   ls
+Linux S  Win10 S  软件 S  数据 M  文档 M  娱乐 M
+
+4.问题：
+无法获得锁 /var/lib/dpkg/lock - open (11: 资源暂时不可用) 
+E: 无法锁定管理目录(/var/lib/dpkg/)，是否有其他进程正占用它？”
+解决：
+1.终端输入 ps -aux ，列出进程,找到含有apt-get的进程，直接sudo kill PID解决。
+eg. sudo kill 2500
+2.强制解锁--命令:
+sudo rm /var/cache/apt/archives/lock
+sudo rm /var/lib/dpkg/lock
+
+5.
+dpgk 命令
+-i：安装软件包；
+-r：删除软件包；
+-P：删除软件包的同时删除其配置文件；
+-L：显示于软件包关联的文件；
+-l：显示已安装软件包列表；
+--unpack：解开软件包；
+-c：显示软件包内文件列表；
+--confiugre：配置软件包。
+
+6.
+为托管代码，使用github,仓库地址为
+https://github.com/1056058740/SCAU_RoboMaster_cver.git
+
